@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETK Parts Catalogue - Full RealOEM Layout</title>
+    <title>ETK Live Web Portal</title>
     <style>
         :root {
             --primary: #1a365d;
@@ -21,7 +21,7 @@
             padding: 15px;
         }
         .container {
-            max-width: 1000px;
+            max-width: 900px;
             margin: 0 auto;
         }
         header {
@@ -29,9 +29,7 @@
             color: white;
             padding: 15px 20px;
             border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            text-align: center;
             margin-bottom: 15px;
         }
         header h2 { margin: 0; font-size: 20px; }
@@ -43,16 +41,15 @@
             margin-bottom: 15px;
             border: 1px solid var(--border);
         }
-        .hidden { display: none !important; }
-        input, select, button {
-            padding: 10px 14px;
-            font-size: 15px;
-            margin-top: 8px;
+        input, button {
+            padding: 12px 14px;
+            font-size: 16px;
+            margin-top: 10px;
             border-radius: 6px;
             border: 1px solid var(--border);
             box-sizing: border-box;
+            width: 100%;
         }
-        input, select { width: 100%; max-width: 400px; display: block; }
         button {
             background: var(--secondary);
             color: white;
@@ -61,177 +58,74 @@
             font-weight: 600;
         }
         button:hover { opacity: 0.9; }
-        .breadcrumb {
-            font-size: 14px;
-            color: var(--secondary);
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-        .grid-groups {
+        .link-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 10px;
+            grid-template-columns: 1fr;
+            gap: 12px;
             margin-top: 15px;
         }
-        .group-btn {
+        .external-btn {
+            display: block;
             background: #fff;
-            border: 1px solid var(--border);
-            padding: 12px 15px;
-            text-align: left;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+            padding: 15px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
             border-radius: 6px;
-            cursor: pointer;
             transition: all 0.2s;
-            color: var(--text);
         }
-        .group-btn:hover {
-            border-color: var(--secondary);
-            background: #ebf8ff;
+        .external-btn:hover {
+            background: var(--secondary);
+            color: white;
         }
-        .group-btn strong { display: block; color: var(--primary); margin-bottom: 2px; font-size: 14px; }
-        .group-btn span { font-size: 12px; color: #666; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-        th, td {
-            border: 1px solid var(--border);
-            padding: 10px;
-            text-align: left;
-        }
-        th { background-color: #edf2f7; }
-        code { background: #edf2f7; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h2>ETK Web Catalogue</h2>
-        <span id="navStatus" style="font-size: 13px; opacity: 0.8;">Select Vehicle</span>
+        <h2>ETK Live Web Portal</h2>
+        <p style="margin: 5px 0 0 0; font-size: 13px; opacity: 0.8;">Instant Access to Internet Parts Catalogues</p>
     </header>
 
-    <!-- STEP 1: VIN Selection -->
-    <div id="stepVehicle" class="card">
-        <h3>Vehicle Identification</h3>
-        <label for="vinInput">Enter 7-digit VIN / Chassis Code:</label>
-        <input type="text" id="vinInput" placeholder="e.g., WBSBL93426PN64213">
-        <button onclick="selectVehicle()">Search VIN / Model</button>
+    <div class="card">
+        <h3>Vehicle Identification (VIN / Chassis)</h3>
+        <label for="vinInput">Enter 17-Digit VIN or Model Code:</label>
+        <input type="text" id="vinInput" placeholder="e.g., WBSBL93426PN64213 or E46">
+        <button onclick="generateLinks()">Generate Live Lookup Links</button>
     </div>
 
-    <!-- STEP 2: Full RealOEM Main Groups Grid -->
-    <div id="stepGroups" class="card hidden">
-        <div class="breadcrumb" onclick="resetToVehicle()">← Change Vehicle</div>
-        <h3 id="vehicleTitle">Main Assembly Groups</h3>
-        <p>Select a main group category:</p>
+    <div id="resultsCard" class="card hidden">
+        <h3 id="displayVinTitle">Select Catalogue Source:</h3>
+        <p>Tap any option below to launch the official web catalogue pre-filtered or ready for your vehicle search:</p>
         
-        <div class="grid-groups">
-            <button class="group-btn" onclick="loadSubGroup('01 - Engine')"><strong>01. Engine</strong><span>Engine block, cylinder head, valvetrain</span></button>
-            <button class="group-btn" onclick="loadSubGroup('11 - Engine Electrical System')"><strong>11. Engine Electrical System</strong><span>Ignition, sensors, alternator, starter</span></button>
-            <button class="group-btn" onclick="loadSubGroup('12 - Fuel Preparation System')"><strong>12. Fuel Preparation</strong><span>Carburetor, injection components</span></button>
-            <button class="group-btn" onclick="loadSubGroup('13 - Fuel Supply')"><strong>13. Fuel Supply</strong><span>Fuel tank, pumps, lines, filter</span></button>
-            <button class="group-btn" onclick="loadSubGroup('16 - Fuel Tank and Lines')"><strong>16. Fuel Tank and Lines</strong><span>Fuel tank trim, expansion tanks</span></button>
-            <button class="group-btn" onclick="loadSubGroup('17 - Cooling')"><strong>17. Cooling</strong><span>Radiator, water pump, thermostat, fan</span></button>
-            <button class="group-btn" onclick="loadSubGroup('18 - Exhaust System')"><strong>18. Exhaust System</strong><span>Manifold, catalytic converter, silencer</span></button>
-            <button class="group-btn" onclick="loadSubGroup('21 - Clutch')"><strong>21. Clutch</strong><span>Clutch disc, pressure plate, release bearing</span></button>
-            <button class="group-btn" onclick="loadSubGroup('22 - Engine Motion Mounting')"><strong>22. Engine Motion Mounting</strong><span>Engine mounts, transmission mounts</span></button>
-            <button class="group-btn" onclick="loadSubGroup('23 - Manual Transmission')"><strong>23. Manual Transmission</strong><span>Housing, gears, shifting mechanism</span></button>
-            <button class="group-btn" onclick="loadSubGroup('24 - Automatic Transmission')"><strong>24. Automatic Transmission</strong><span>Transmission housing, valve body, torque converter</span></button>
-            <button class="group-btn" onclick="loadSubGroup('25 - Gearshift')"><strong>25. Gearshift</strong><span>Gearshift linkage, levers, knobs</span></button>
-            <button class="group-btn" onclick="loadSubGroup('26 - Driveshaft')"><strong>26. Driveshaft</strong><span>Propeller shaft, center support, universal joint</span></button>
-            <button class="group-btn" onclick="loadSubGroup('31 - Front Axle')"><strong>31. Front Axle</strong><span>Suspension strut, control arms, hub, stabilizer</span></button>
-            <button class="group-btn" onclick="loadSubGroup('32 - Steering')"><strong>32. Steering</strong><span>Steering gear, tie rods, steering column</span></button>
-            <button class="group-btn" onclick="loadSubGroup('33 - Rear Axle')"><strong>33. Rear Axle</strong><span>Rear axle support, control arms, wheel bearing</span></button>
-            <button class="group-btn" onclick="loadSubGroup('34 - Brakes')"><strong>34. Brakes</strong><span>Brake pads, discs, lines, master cylinder, ABS</span></button>
-            <button class="group-btn" onclick="loadSubGroup('35 - Pedals')"><strong>35. Pedals</strong><span>Foot controls, brake and clutch pedals</span></button>
-            <button class="group-btn" onclick="loadSubGroup('36 - Wheels and Tires')"><strong>36. Wheels and Tires</strong><span>Alloy rims, steel wheels, valves, hub caps</span></button>
-            <button class="group-btn" onclick="loadSubGroup('41 - Bodywork')"><strong>41. Bodywork</strong><span>Frame, side members, panels, doors, hood</span></button>
-            <button class="group-btn" onclick="loadSubGroup('51 - Vehicle Trim')"><strong>51. Vehicle Trim</strong><span>Bumpers, grilles, interior trim, dashboards</span></button>
-            <button class="group-btn" onclick="loadSubGroup('52 - Seats')"><strong>52. Seats</strong><span>Front seats, rear benches, seat frames, covers</span></button>
-            <button class="group-btn" onclick="loadSubGroup('61 - General Electrical Equipment')"><strong>61. General Electrical</strong><span>Fuses, wiring harnesses, switches, relays</span></button>
-            <button class="group-btn" onclick="loadSubGroup('62 - Instruments')"><strong>62. Instruments</strong><span>Instrument cluster, gauges, indicators</span></button>
-            <button class="group-btn" onclick="loadSubGroup('64 - Heating and Air Conditioning')"><strong>64. Heating and A/C</strong><span>Blower, heater core, AC compressor, evaporator</span></button>
-            <button class="group-btn" onclick="loadSubGroup('65 - Audio, Navigation, Electronic Systems')"><strong>65. Audio & Electronics</strong><span>Radio, amplifier, navigation computer, antenna</span></button>
-            <button class="group-btn" onclick="loadSubGroup('66 - Accessories')"><strong>66. Accessories</strong><span>Park distance control, alarm system, sensors</span></button>
-            <button class="group-btn" onclick="loadSubGroup('71 - Equipment Parts')"><strong>71. Equipment Parts</strong><span>First aid kit, warning triangle, tools</span></button>
-            <button class="group-btn" onclick="loadSubGroup('72 - General Accessories')"><strong>72. General Accessories</strong><span>Mounting kits, universal hardware</span></button>
+        <div class="link-grid">
+            <a id="linkRealOEM" href="https://www.realoem.com" target="_blank" class="external-btn">Open on RealOEM.com ↗</a>
+            <a id="link7Zap" href="https://7zap.com" target="_blank" class="external-btn">Open on 7zap Parts Catalog ↗</a>
+            <a id="linkBimmerWork" href="https://bimmer.work" target="_blank" class="external-btn">Decode VIN on Bimmer.work ↗</a>
         </div>
-    </div>
-
-    <!-- STEP 3: Parts Table View -->
-    <div id="stepParts" class="card hidden">
-        <div class="breadcrumb" onclick="backToGroups()">← Back to Main Groups</div>
-        <h3 id="groupTitle">Parts Listing</h3>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>Pos</th>
-                    <th>Part Description</th>
-                    <th>Part Number</th>
-                    <th>Qty</th>
-                </tr>
-            </thead>
-            <tbody id="partsTableBody">
-                <!-- Populated via script -->
-            </tbody>
-        </table>
     </div>
 </div>
 
 <script>
-    let currentVin = "";
-
-    function selectVehicle() {
-        const vin = document.getElementById('vinInput').value.trim();
-        if(!vin) {
-            alert('Please enter a VIN or model code.');
+    function generateLinks() {
+        const query = document.getElementById('vinInput').value.trim();
+        if(!query) {
+            alert('Please enter a VIN or model code first.');
             return;
         }
-        currentVin = vin.toUpperCase();
-        document.getElementById('vehicleTitle').innerText = `Main Groups for: ${currentVin}`;
-        document.getElementById('navStatus').innerText = currentVin;
 
-        document.getElementById('stepVehicle').classList.add('hidden');
-        document.getElementById('stepGroups').classList.remove('hidden');
-    }
-
-    function resetToVehicle() {
-        document.getElementById('stepGroups').classList.add('hidden');
-        document.getElementById('stepVehicle').classList.remove('hidden');
-        document.getElementById('navStatus').innerText = "Select Vehicle";
-    }
-
-    function backToGroups() {
-        document.getElementById('stepParts').classList.add('hidden');
-        document.getElementById('stepGroups').classList.remove('hidden');
-    }
-
-    function loadSubGroup(groupName) {
-        document.getElementById('groupTitle').innerText = `${groupName} Parts`;
+        document.getElementById('displayVinTitle').innerText = `Catalogues for: ${query.toUpperCase()}`;
         
-        // Dynamic mock generator matching group context
-        let sampleParts = [
-            { pos: "1", name: `Primary Assembly Component for ${groupName}`, partNo: "11-00-1-435-012", qty: "1" },
-            { pos: "2", name: `Securing Bolt / Fastener`, partNo: "07-11-9-905-373", qty: "4" },
-            { pos: "3", name: `Gasket / Sealing Ring`, partNo: "11-12-7-508-198", qty: "2" },
-            { pos: "4", name: `Bracket / Mount Support`, partNo: "18-10-7-560-843", qty: "1" }
-        ];
+        // Update destination links with smart fallbacks or direct queries where applicable
+        document.getElementById('linkRealOEM').href = `https://www.realoem.com/bmw/enparts?q=${encodeURIComponent(query)}`;
+        document.getElementById('link7Zap').href = `https://7zap.com/en/catalog/cars/`;
+        document.getElementById('linkBimmerWork').href = `https://bimmer.work/`;
 
-        const tbody = document.getElementById('partsTableBody');
-        tbody.innerHTML = "";
-        sampleParts.forEach(item => {
-            tbody.innerHTML += `<tr>
-                <td>${item.pos}</td>
-                <td>${item.name}</td>
-                <td><code>${item.partNo}</code></td>
-                <td>${item.qty}</td>
-            </tr>`;
-        });
-
-        document.getElementById('stepGroups').classList.add('hidden');
-        document.getElementById('stepParts').classList.remove('hidden');
+        document.getElementById('resultsCard').classList.remove('hidden');
     }
 </script>
 
