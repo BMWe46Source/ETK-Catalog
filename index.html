@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ETK Parts Catalogue - Full RealOEM Layout</title>
+    <title>ETK Parts Catalogue - RealOEM Style with Diagrams</title>
     <style>
         :root {
             --primary: #1a365d;
@@ -21,7 +21,7 @@
             padding: 15px;
         }
         .container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
         }
         header {
@@ -44,7 +44,7 @@
             border: 1px solid var(--border);
         }
         .hidden { display: none !important; }
-        input, select, button {
+        input, button {
             padding: 10px 14px;
             font-size: 15px;
             margin-top: 8px;
@@ -52,7 +52,7 @@
             border: 1px solid var(--border);
             box-sizing: border-box;
         }
-        input, select { width: 100%; max-width: 400px; display: block; }
+        input { width: 100%; max-width: 400px; display: block; }
         button {
             background: var(--secondary);
             color: white;
@@ -89,19 +89,40 @@
         }
         .group-btn strong { display: block; color: var(--primary); margin-bottom: 2px; font-size: 14px; }
         .group-btn span { font-size: 12px; color: #666; }
+        
+        /* RealOEM Layout Split for Diagram & Parts */
+        .catalog-workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .catalog-workspace { grid-template-columns: 1fr; }
+        }
+        .diagram-box {
+            border: 1px solid var(--border);
+            background: #fff;
+            padding: 15px;
+            text-align: center;
+            border-radius: 6px;
+        }
+        .diagram-box img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #eee;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 14px;
+            font-size: 13px;
         }
         th, td {
             border: 1px solid var(--border);
-            padding: 10px;
+            padding: 8px;
             text-align: left;
         }
         th { background-color: #edf2f7; }
-        code { background: #edf2f7; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+        code { background: #edf2f7; padding: 2px 4px; border-radius: 3px; font-family: monospace; }
     </style>
 </head>
 <body>
@@ -159,24 +180,37 @@
         </div>
     </div>
 
-    <!-- STEP 3: Parts Table View -->
+    <!-- STEP 3: Diagram & Parts Split View -->
     <div id="stepParts" class="card hidden">
         <div class="breadcrumb" onclick="backToGroups()">← Back to Main Groups</div>
-        <h3 id="groupTitle">Parts Listing</h3>
+        <h3 id="groupTitle">Assembly Breakdown</h3>
         
-        <table>
-            <thead>
-                <tr>
-                    <th>Pos</th>
-                    <th>Part Description</th>
-                    <th>Part Number</th>
-                    <th>Qty</th>
-                </tr>
-            </thead>
-            <tbody id="partsTableBody">
-                <!-- Populated via script -->
-            </tbody>
-        </table>
+        <div class="catalog-workspace">
+            <!-- Left Side: Schematic Diagram View -->
+            <div class="diagram-box">
+                <h4>Schematic Diagram</h4>
+                <img id="diagramImage" src="" alt="Assembly Schematic Diagram">
+                <p style="font-size: 12px; color: #666; margin-top: 8px;">Reference diagram corresponding to part index numbers.</p>
+            </div>
+
+            <!-- Right Side: Parts Table View -->
+            <div>
+                <h4>Parts List</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pos</th>
+                            <th>Description</th>
+                            <th>Part Number</th>
+                            <th>Qty</th>
+                        </tr>
+                    </thead>
+                    <tbody id="partsTableBody">
+                        <!-- Populated via script -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -209,21 +243,24 @@
     }
 
     function loadSubGroup(groupName) {
-        document.getElementById('groupTitle').innerText = `${groupName} Parts`;
+        document.getElementById('groupTitle').innerText = `${groupName} Breakdown`;
         
-        // Dynamic mock generator matching group context
+        // Dynamically assign schematic diagram previews and matching parts
+        let diagramUrl = "https://www.realoem.com/bmw/images/diag_90z.png"; // Generic schematic placeholder
         let sampleParts = [
-            { pos: "1", name: `Primary Assembly Component for ${groupName}`, partNo: "11-00-1-435-012", qty: "1" },
-            { pos: "2", name: `Securing Bolt / Fastener`, partNo: "07-11-9-905-373", qty: "4" },
-            { pos: "3", name: `Gasket / Sealing Ring`, partNo: "11-12-7-508-198", qty: "2" },
-            { pos: "4", name: `Bracket / Mount Support`, partNo: "18-10-7-560-843", qty: "1" }
+            { pos: "1", name: `Main Component for ${groupName}`, partNo: "11-42-7-566-327", qty: "1" },
+            { pos: "2", name: `O-Ring / Sealing Washer`, partNo: "11-42-1-744-000", qty: "2" },
+            { pos: "3", name: `Hexagon Bolt / Fastener`, partNo: "07-11-9-905-373", qty: "4" },
+            { pos: "4", name: `Mounting Bracket / Support`, partNo: "18-10-7-560-843", qty: "1" }
         ];
+
+        document.getElementById('diagramImage').src = diagramUrl;
 
         const tbody = document.getElementById('partsTableBody');
         tbody.innerHTML = "";
         sampleParts.forEach(item => {
             tbody.innerHTML += `<tr>
-                <td>${item.pos}</td>
+                <td><strong>${item.pos}</strong></td>
                 <td>${item.name}</td>
                 <td><code>${item.partNo}</code></td>
                 <td>${item.qty}</td>
